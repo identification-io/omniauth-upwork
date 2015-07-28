@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'omniauth/upwork/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "omniauth-upwork"
+  spec.name          = "omniauth-upwork-oauth"
   spec.version       = OmniAuth::Upwork::VERSION
   spec.authors       = ["Eugene Likholetov"]
   spec.email         = ["bsboris@gmail.com"]
