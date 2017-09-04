@@ -7,33 +7,40 @@ module OmniAuth
       option :name, "upwork"
 
       option :client_options, {
-        :site => "https://www.upwork.com",
-        :request_token_path => "/api/auth/v1/oauth/token/request",
-        :access_token_path => "/api/auth/v1/oauth/token/access",
-        :authorize_url => "https://www.linkedin.com/services/api/auth"
+        site: "https://www.upwork.com",
+        request_token_path: "/api/auth/v1/oauth/token/request",
+        access_token_path: "/api/auth/v1/oauth/token/access",
+        authorize_url: "/services/api/auth"
       }
 
       uid { raw_info["info"]["ref"] }
 
       info do
-        prune!({
-          :name => full_name,
-          :first_name => raw_info["auth_user"]["first_name"],
-          :last_name => raw_info["auth_user"]["first_name"],
-          :image => raw_info["portrait_100_img"],
-          :location => location,
-          :urls => {
-            :public_profile => raw_info["info"]["profile_url"]
+        user_hash = raw_info.fetch("user", {})
+
+        prune!(
+          name: full_name,
+          first_name: raw_info["auth_user"]["first_name"],
+          last_name: raw_info["auth_user"]["first_name"],
+          email: user_hash["email"],
+          # Try to extract username from profile URL: https://odesk-prod-portraits.s3.amazonaws.com/Users:username:PortraitUrl_100
+          nickname: user_hash["id"] || raw_info["portrait_100_img"].scan(/Users:([^:]+):/).flatten.first,
+          image: raw_info["portrait_100_img"],
+          location: location,
+          urls: {
+            public_profile: raw_info["info"]["profile_url"],
+            company: raw_info["info"]["company_url"]
           }
-        })
+        )
       end
 
       extra do
-        prune!({ :raw_info => raw_info })
+        prune!(raw_info: raw_info)
       end
 
       def raw_info
         @raw_info ||= MultiJson.decode(access_token.get("/api/auth/v1/info.json").body)
+        @raw_info["user"] ||= MultiJson.decode(access_token.get("/api/hr/v2/users/me.json").body["user"])
       end
 
       private
@@ -55,6 +62,5 @@ module OmniAuth
         end
       end
     end
-
   end
 end
