@@ -6,8 +6,8 @@ require 'omniauth/upwork/version'
 Gem::Specification.new do |spec|
   spec.name          = "omniauth-upwork-oauth"
   spec.version       = OmniAuth::Upwork::VERSION
-  spec.authors       = ["Eugene Likholetov"]
-  spec.email         = ["bsboris@gmail.com"]
+  spec.authors       = ["Eugene Likholetov", "Joel Van Horn"]
+  spec.email         = ["bsboris@gmail.com", "joel@joelvanhorn.com"]
 
   spec.summary       = %q{Upwork strategy for OmniAuth.}
   spec.description   = %q{Upwork strategy for OmniAuth.}

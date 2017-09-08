@@ -10,7 +10,7 @@ module OmniAuth
         site: "https://www.upwork.com",
         request_token_path: "/api/auth/v1/oauth/token/request",
         access_token_path: "/api/auth/v1/oauth/token/access",
-        authorize_url: "/services/api/auth"
+        authorize_path: "/services/api/auth"
       }
 
       uid { raw_info["info"]["ref"] }
@@ -40,10 +40,14 @@ module OmniAuth
 
       def raw_info
         @raw_info ||= MultiJson.decode(access_token.get("/api/auth/v1/info.json").body)
-        @raw_info["user"] ||= MultiJson.decode(access_token.get("/api/hr/v2/users/me.json").body["user"])
+        @raw_info["user"] ||= user_info
       end
 
-      private
+      def user_info
+        @user_info ||= MultiJson.decode(access_token.get("/api/hr/v2/users/me.json").body)["user"]
+      end
+
+    private
 
       def full_name
         data = raw_info["auth_user"]
