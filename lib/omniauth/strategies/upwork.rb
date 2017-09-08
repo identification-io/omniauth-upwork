@@ -20,10 +20,10 @@ module OmniAuth
           name: full_name,
           first_name: raw_info["auth_user"]["first_name"],
           last_name: raw_info["auth_user"]["first_name"],
-          email: user_info["email"],
+          email: user_info["user"]["email"],
           # Try to extract username from profile URL: https://odesk-prod-portraits.s3.amazonaws.com/Users:username:PortraitUrl_100
-          nickname: user_info["id"] || raw_info["portrait_100_img"].scan(/Users:([^:]+):/).flatten.first,
-          image: raw_info["portrait_100_img"],
+          nickname: user_info["user"]["id"] || raw_info["info"]["portrait_100_img"].scan(/Users:([^:]+):/).flatten.first,
+          image: raw_info["info"]["portrait_100_img"],
           location: location,
           urls: {
             public_profile: raw_info["info"]["profile_url"],
@@ -37,11 +37,11 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= MultiJson.decode(access_token.get("/api/auth/v1/info.json").body) || {}
+        @raw_info ||= MultiJson.decode(access_token.get("/api/auth/v1/info.json").body)
       end
 
       def user_info
-        @user_info ||= MultiJson.decode(access_token.get("/api/hr/v2/users/me.json").body) || {}
+        @user_info ||= MultiJson.decode(access_token.get("/api/hr/v2/users/me.json").body)
       end
 
     private
