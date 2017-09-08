@@ -52,7 +52,7 @@ module OmniAuth
       end
 
       def location
-        data = raw_info["location"]
+        data = raw_info["info"]["location"]
         [data["country"], data["state"], data["city"]].compact.join(", ").strip
       end
 
