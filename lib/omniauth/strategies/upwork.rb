@@ -16,15 +16,13 @@ module OmniAuth
       uid { raw_info["info"]["ref"] }
 
       info do
-        user_hash = raw_info.fetch("user", {})
-
         prune!(
           name: full_name,
           first_name: raw_info["auth_user"]["first_name"],
           last_name: raw_info["auth_user"]["first_name"],
-          email: user_hash["email"],
+          email: user_info["email"],
           # Try to extract username from profile URL: https://odesk-prod-portraits.s3.amazonaws.com/Users:username:PortraitUrl_100
-          nickname: user_hash["id"] || raw_info["portrait_100_img"].scan(/Users:([^:]+):/).flatten.first,
+          nickname: user_info["id"] || raw_info["portrait_100_img"].scan(/Users:([^:]+):/).flatten.first,
           image: raw_info["portrait_100_img"],
           location: location,
           urls: {
@@ -35,16 +33,15 @@ module OmniAuth
       end
 
       extra do
-        prune!(raw_info: raw_info)
+        prune!(raw_info: raw_info, user_info: user_info)
       end
 
       def raw_info
-        @raw_info ||= MultiJson.decode(access_token.get("/api/auth/v1/info.json").body)
-        @raw_info["user"] ||= user_info
+        @raw_info ||= MultiJson.decode(access_token.get("/api/auth/v1/info.json").body) || {}
       end
 
       def user_info
-        @user_info ||= MultiJson.decode(access_token.get("/api/hr/v2/users/me.json").body)["user"]
+        @user_info ||= MultiJson.decode(access_token.get("/api/hr/v2/users/me.json").body) || {}
       end
 
     private
